@@ -196,3 +196,105 @@ nmap -A -p 80,443,8080 10.10.10.10
 - **Custom Scripts**: Write custom NSE scripts for specific needs (refer to Nmap documentation).
 - **Verbose Output**: Use `-v` or `-vv` for detailed output during debugging.
 - **Documentation**: Run `nmap --help` or visit the official Nmap website for advanced options.
+
+
+## TLDR:
+
+Scan for all open ports without any scripts
+
+```
+$ nmap -p- bank.example                   
+
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-01-10 21:14 EEST
+Stats: 0:00:06 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 34.43% done; ETC: 21:15 (0:00:11 remaining)
+Stats: 0:00:08 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 38.88% done; ETC: 21:15 (0:00:13 remaining)
+Nmap scan report for bank.example (10.10.10.10)
+Host is up (0.031s latency).
+Not shown: 65527 closed tcp ports (reset)
+PORT     STATE    SERVICE
+22/tcp   open     ssh
+4786/tcp filtered smart-install
+6054/tcp open     x11
+6680/tcp filtered unknown
+8051/tcp open     rocrail
+8052/tcp open     senomix01
+8053/tcp open     senomix02
+8054/tcp open     senomix03
+```
+
+Then we continue with specific ports from the scan with scripts
+
+```
+$ nmap -p22,2486,6054,6680,8061,8051,8052,8053,8054 -sV -sC -O bank.example
+
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-01-10 21:17 EEST
+Stats: 0:00:17 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
+Service scan Timing: About 83.33% done; ETC: 21:17 (0:00:03 remaining)
+Nmap scan report for bank.saldus (10.10.10.10)
+Host is up (0.032s latency).
+
+
+PORT     STATE    SERVICE      VERSION
+22/tcp   open     ssh          OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   256 15:4f:13:59:77:fc:75:3d:da:ec:e4:73:28:eb:56:aa (ECDSA)
+|_  256 9e:5d:55:f9:6a:7f:ff:33:3c:d6:2e:2c:9e:34:1b:e6 (ED25519)
+2486/tcp closed   netobjects2
+6054/tcp open     http         Microsoft Kestrel httpd
+|_http-title: SecureBank
+|_http-server-header: Kestrel
+6680/tcp filtered unknown
+8051/tcp open     http         Apache httpd 2.4.25 ((Debian))
+| http-robots.txt: 1 disallowed entry
+|_/
+| http-title: Login :: Damn Vulnerable Web Application (DVWA) v1.10 *Develop...
+|_Requested resource was login.php
+| http-cookie-flags:
+|   /:
+|     PHPSESSID:
+|_      httponly flag not set
+|_http-server-header: Apache/2.4.25 (Debian)
+8052/tcp open     http         Apache httpd 2.4.25 ((Debian))
+|_http-server-header: Apache/2.4.25 (Debian)
+| http-title: Login :: Damn Vulnerable Web Application (DVWA) v1.10 *Develop...
+|_Requested resource was login.php
+| http-robots.txt: 1 disallowed entry
+|_/
+| http-cookie-flags:
+|   /:
+|     PHPSESSID:
+|_      httponly flag not set
+8053/tcp open     http         Apache httpd 2.4.25 ((Debian))
+| http-cookie-flags:
+|   /:
+|     PHPSESSID:
+|_      httponly flag not set
+| http-robots.txt: 1 disallowed entry
+|_/
+| http-title: Login :: Damn Vulnerable Web Application (DVWA) v1.10 *Develop...
+|_Requested resource was login.php
+|_http-server-header: Apache/2.4.25 (Debian)
+8054/tcp open     http         Apache httpd 2.4.25 ((Debian))
+|_http-server-header: Apache/2.4.25 (Debian)
+| http-cookie-flags:
+|   /:
+|     PHPSESSID:
+|_      httponly flag not set
+| http-title: Login :: Damn Vulnerable Web Application (DVWA) v1.10 *Develop...
+|_Requested resource was login.php
+| http-robots.txt: 1 disallowed entry
+|_/
+8061/tcp closed   nikatron-dev
+Device type: general purpose|router
+Running: Linux 5.X, MikroTik RouterOS 7.X
+OS CPE: cpe:/o:linux:linux_kernel:5 cpe:/o:mikrotik:routeros:7 cpe:/o:linux:linux_kernel:5.6.3
+OS details: Linux 5.0 - 5.14, MikroTik RouterOS 7.2 - 7.5 (Linux 5.6.3)
+Network Distance: 15 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 22.05 seconds
+```
